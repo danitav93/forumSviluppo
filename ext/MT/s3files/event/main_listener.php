@@ -507,9 +507,8 @@ class main_listener implements EventSubscriberInterface
 
 		$this->template->assign_var('s3_is_visible', $this->config['s3_is_enabled'] );
 		
+		$this->template->assign_var('s3_username', $this->user->data['username'] );
 		
-		
-			
 		//aggiungo quelli che avevo aggiunto prima nel caso avessi già degli elementi
 		$listQuoted=$this->request->variable('quoted','',0);
 		

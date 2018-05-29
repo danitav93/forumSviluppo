@@ -6,7 +6,7 @@
 
 <!-- INCLUDEJS @MT_s3files/image-compressor.js -->
 
-
+<!-- INCLUDEJS @MT_s3files/watermark.js -->
 
 <div class="panel bg3 panel-container" id="imgs3-panel">
 	
@@ -16,23 +16,29 @@
 	
 	<br/>
 	
-
-	<div id="container" style="width:100%">
-		<input type="button" class="button2" value="Aggiungi file" id="s3addfiles" onclick="upLoadNewFile()" style="float:left"/>
+	
+	<div id="container" >
+		<input type="button" class="button2" value="Aggiungi file" id="s3addfiles" onclick="upLoadNewFile(0)" style="float:left"/>
+		<input type="button" style=" margin-left: 20px;" class="button2" value="Aggiungi file con watermark" id="s3addfiles_watermark" onclick="upLoadNewFile(1)" style="float:left"/>
 		<div id="loader" style="margin:0 auto;display:none"></div>
 	</div>
+	
 	<input type="file" id="imgupload" style="display:none" onChange="onFileChoosen()" multiple="multiple"/> 
 	
-	<input type="text" id="s3filelist" name="s3filelist" style="display:none" onChange="onFileChoosen()"/> 
+	<input type="text" id="s3filelist" name="s3filelist" style="display:none" />
+	<input type="text" id="flgwatermark" name="flgwatermark" style="display:none" />
+	
 	<br/>
 	<br/>
+	
+	<input type="text" id="s3username" name="s3username" style="display:none" value="{s3_username}" />
 	
 	<input type="text" id="oldrows" value="{S_SOME_VARIABLE}" style="display:none" name="oldrows"/> 
 	
 	<input type="text" id="quoted" value="{S_QUOTED_FILES}" style="display:none" name="quoted"/> 
 	
-	<div class="panel file-list-container " style="display:none;"  id="s3-file-list-container">
-			<table id="s3table" class=" zebra-list w3-table css-serial" name="s3table" >
+	<div class="panel file-list-container " style="display:none; overflow-x:auto;"  id="s3-file-list-container">
+			<table id="s3table" class=" zebra-list w3-table css-serial s3table" name="s3table" >
   
 			<col width="5%">
 			<col width="15%">
@@ -94,17 +100,18 @@
 				
 				row.heigth="100";
 		
+				//number
 				var cell0 = row.insertCell(0);
-				cell0.width='5%';
 				
+				//nome
 				var cell1 = row.insertCell(1);
-				cell1.width='15%';
 				
+				//anteprima
 				var cell5 =row.insertCell(2);
-				cell5.width='20%';
 				
+				//didascalia
 				var cell6 = row.insertCell(3);
-				cell6.width='25%';
+				
 				
 				
 				if (tag == 'image') {
@@ -120,11 +127,14 @@
 					didascaliaInput.type = "text";
 					didascaliaInput.size=65;
 					didascaliaInput.maxLength=75;
+					didascaliaInput.addEventListener("keyup",function checkText() {
+						restrictDidascaliaInput(didascaliaInput);
+					});
 					
 					var editSaveDidascaliaButton=document.createElement('button');
 					editSaveDidascaliaButton.innerHTML='<img src="./ext/MT/s3files/images/edit.png" width="30px" />';
 					editSaveDidascaliaButton.addEventListener("click",function _edit() {
-						editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,tag,id,size,tag);
+						editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,id,size,tag);
 					});
 					editSaveDidascaliaButton.type="button";
 					cell6.appendChild(didascaliaInput);
@@ -132,17 +142,16 @@
 				}
 				
 				
-				
+				//dimensione
 				var cell2 = row.insertCell(4);
-				cell2.width='10%';
 				
+				//aggiungi in linea
 				var cell3 = row.insertCell(5);
-				cell3.width='10%';
 		
+				//cancella
 				var cell4 = row.insertCell(6);
-				cell4.width='15%';
 				
-				
+	
 				cell1.innerHTML = name;
 				
 				cell2.innerHTML = size+" KB" ; 
@@ -170,6 +179,7 @@
 					cancella(name,row,tag,id,size,didascaliaInput);
 				});
 				cell4.appendChild(btn2);
+				
 				
 				
 				

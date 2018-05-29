@@ -6,3 +6,4 @@
  * by phpBB while loading the extensions.
  */
 
+require('./ext/MT/s3files/vendor/autoload.php');

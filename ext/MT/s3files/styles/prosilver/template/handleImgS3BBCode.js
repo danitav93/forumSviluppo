@@ -44,7 +44,9 @@ function s3ImageClick() {
     $('#imgupload').trigger('click');             
 }
 
+
 function onFileChoosen(){
+	
 	
 	startLoader();
 	var files = document.getElementById("imgupload").files;
@@ -52,13 +54,39 @@ function onFileChoosen(){
 	for (var j=0;j<files.length;j++) {
 		(function () {
 			var file = files[j];
+						
 			if (file.name.indexOf("#")>-1 || file.name.indexOf("*")>-1) {
 				alert("Il nome del file non deve contenere i caratteri #,*  ");
 				stopLoader();
 				return;
 			}
 			
+			var namesLowerCase = [];
+			for (var i = 0; i < names.length; i++) {
+				namesLowerCase.push(names[i].toLowerCase());
+			}
+			if (file!=null && namesLowerCase.indexOf(file.name.toLowerCase())>-1) {
+				alert("Non è possibile caricare due file con lo stesso nome");
+				stopLoader();
+				return;
+			}
+			
+			var quotedNamesLowerCase = [];
+			for (var i = 0; i < quotedNames.length; i++) {
+				quotedNamesLowerCase.push(quotedNames[i].toLowerCase().toLowerCase());
+			}
+			if (file!=null && quotedNamesLowerCase.indexOf(file.name)>-1) {
+				alert("Non è possibile caricare un file con lo stesso nome di un file quotato");
+				stopLoader();
+				return;
+			}
+			
 			if (file!=null && names.indexOf(file.name)==-1 && quotedNames.indexOf(file.name)==-1) {
+				
+				if ( file.type.match('image.*') && document.getElementById("flgwatermark").value==1) {
+					addWatermark(file);
+					return;
+				}
 				
 				if (file.size > 600000 && file.type.match('image.*')) {
 					var r = confirm("Attenzione! L'immagine "+file.name+" è troppo grande. Vuoi ridimensionarla? Il ridimensionamento causerà una perdita di qualità e il rallentamento dell'upload.");
@@ -71,21 +99,14 @@ function onFileChoosen(){
 				}
 				
 				cacheFile(file);
-			} else if (file!=null && names.indexOf(file.name)>-1){
-				alert("Non è possibile caricare due file con lo stesso nome");
-				stopLoader();
-				return;
-			} else if (file!=null) {
-				alert("Non è possibile caricare un file con lo stesso nome di un file quotato");
-				stopLoader();
-				return;
-			}
+			} 
 		}()); 
 	}
 	document.getElementById("imgupload").value=null;
 }
 
-function upLoadNewFile(){
+function upLoadNewFile(flgWatermark){
+	document.getElementById("flgwatermark").value=flgWatermark;
 	$('#imgupload').trigger('click');      
 }
 
@@ -109,8 +130,7 @@ function cambioDidascalia(name,row,tag,id,size,didascaliaInput) {
 	
 }
 
-function editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,tag,id,size,tag) {
-	
+function editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,id,size,tag) {
 	
 	didascaliaInput.disabled=false;
 	var oldValue=didascaliaInput.value;
@@ -119,11 +139,13 @@ function editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,tag,id
 	editSaveDidascaliaButton.parentNode.replaceChild(clone,editSaveDidascaliaButton);
 	clone.addEventListener("click",function save() {
 		saveDidascalia(didascaliaInput,clone,oldValue,name,row,tag,id,size);
+		
 	});
 	
 }
 
 function saveDidascalia(didascaliaInput,editSaveDidascaliaButton,oldValue,name,row,tag,id,size) {
+	
 	if (confirm('Attenzione la modifica della didascalia comporta la cancellazione dell\'immagine in linea. Sei sicuro di voler aggiornare la didascalia?')) {
 		cambioDidascalia(name,row,tag,id,size,didascaliaInput);
 		rimuoviInLinea(name,tag,id);
@@ -135,13 +157,14 @@ function saveDidascalia(didascaliaInput,editSaveDidascaliaButton,oldValue,name,r
 	var clone = editSaveDidascaliaButton.cloneNode(true);
 	editSaveDidascaliaButton.parentNode.replaceChild(clone,editSaveDidascaliaButton);
 	clone.addEventListener("click",function save() {
-		editDidascalia(didascaliaInput,clone,oldValue,name,row,tag,id,size,tag);
+		editDidascalia(didascaliaInput,clone,name,row,id,size,tag);
 	});
 	
 	
 }
 
 function rimuoviInLinea(name,tag,id){
+	
 	var newPost=document.getElementById("message").value;
 	var bbCodeToRemove="["+tag+" name="+name+" key="+id+"]";
 	while (newPost.indexOf(bbCodeToRemove)>-1) {
@@ -236,7 +259,8 @@ function aggiungiInLinea(name, tag, id){
 			
 			//Firefox, chrome, mozilla
 			cursorPosition=post.selectionStart;
-			if (cursorPosition) {
+			
+			if (cursorPosition || cursorPosition==0) {
 				var textBefore = post.value.substr(0,cursorPosition);
 				var textAfter = post.value.substr(cursorPosition);
 				post.value=textBefore+"\n\n["+tag+" name="+name+" key="+id+"]"+textAfter;
@@ -294,11 +318,14 @@ function addRow(id,tag,file) {
 			didascaliaInput.type = "text";
 			didascaliaInput.size=65;
 			didascaliaInput.maxLength=75;
+			didascaliaInput.addEventListener("keyup",function checkText() {
+				restrictDidascaliaInput(didascaliaInput);
+			});
 					
 			var editSaveDidascaliaButton=document.createElement('button');
 			editSaveDidascaliaButton.innerHTML='<img src="./ext/MT/s3files/images/edit.png" width="30px" />';
 			editSaveDidascaliaButton.addEventListener("click",function edit() {
-				editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,tag,id,size,tag);
+				editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,id,size,tag);
 			});
 			editSaveDidascaliaButton.type="button";
 			
@@ -347,8 +374,8 @@ function addRow(id,tag,file) {
 		});
 		cell4.appendChild(btn2);
 		
-		
 		names.push(name);
+		
 		document.getElementById("s3filelist").value=document.getElementById("s3filelist").value+"*"+name+"#"+id+"#"+size+"#"+tag+"#";//didascalia
 		document.getElementById("s3-file-list-container").style.display = "block";
 
@@ -401,4 +428,114 @@ function getFileRidimensionato2(file, width) {
 		
 }
 
+function addWatermark(file) {
+	var widthWatermark;
+	try {
+	//mi vado a prendere il watermark dell'utente
+	fetch('./ext/MT/s3files/images/logo.png')
+		.then(res => res.blob()) 
+			.then(blob => {
+				blob.name="watermark";
+				blob.lastModifiedDate = new Date();
+				//mi prendo la dimensione del file su cui applicare il watermark
+				if (FileReader) {
+					var reader  = new FileReader();
+					reader.onload= function () {
+						var i = new Image();
+						i.src = reader.result;
+						i.onload = function() {
+						widthWatermark=i.width/2;	
+							//faccio il resize del watermark e lo mando a stampare
+							new ImageCompressor(blob, {
+								quality: .9,
+								maxWidth: widthWatermark,
+								maxHeight: i.height/4,
+								success(resizedImage) {
+									addWatermark2(file, resizedImage,widthWatermark);
+								}, 
+								error(e) {
+									alert("errore durante la conversione");
+								},
+							});
+							
+							
+						}
+					};
+					reader.readAsDataURL(file);
+				} else {
+					alert("Ridimensionamento non supportato per questo browser");
+				}	
+			});
+			
+	} catch (e) {
+		alert("errore");
+	}
+
+}	
+
+const watermark_options = {
+		init(img) {
+			img.crossOrigin = 'anonymous'
+		}
+};
+
+//aggiungo la scritta
+function addWatermark2(file,watermarkImg,widthWatermark) {
+	try {
+		watermark([file,watermarkImg ], watermark_options)
+			.image(watermark.text.lowerRight(document.getElementById("s3username").value, '48px Josefin Slab', '#fff'))
+			.then(img => {
+				fetch(img.src)
+					.then(res => res.blob()) // Gets the response and returns it as a blob
+						.then(blob => {
+							blob.name=file.name;
+							blob.lastModifiedDate = new Date();
+							addWatermark3(blob,watermarkImg);
+						});
+			});
+	} catch (e) {
+		alert(e);
+		stopLoader();
+	}
+	
+}
+
+//aggiungo il logo
+function addWatermark3(file,watermarkImg) {
+	
+	try {
+		watermark([file,watermarkImg ], watermark_options)
+			.image(watermark.image.lowerRight())
+			.then(img => {
+				fetch(img.src)
+					.then(res => res.blob()) // Gets the response and returns it as a blob
+						.then(blob => {
+							blob.name=file.name;
+							blob.lastModifiedDate = new Date();
+								if (blob.size > 600000 && blob.type.match('image.*')) {
+									var r = confirm("Attenzione! L'immagine "+blob.name+" è troppo grande. Vuoi ridimensionarla? Il ridimensionamento causerà una perdita di qualità e il rallentamento dell'upload.");
+									if (r == true) {
+										getFileRidimensionato1(blob);
+									} else {
+										stopLoader();
+									}
+									return;
+								}
+								cacheFile(blob);
+		
+						});
+			});
+	} catch (e) {
+		alert(e);
+		stopLoader();
+	}
+
+}
+
+function restrictDidascaliaInput(input) {
+	
+		var regex= /[^a-z0-9\s]/gi;
+		input.value = input.value.replace(regex, "");
+	
+}
 
