@@ -1,0 +1,186 @@
+<!-- INCLUDECSS @MT_s3files/mytheme.css -->
+
+<!-- INCLUDECSS @MT_s3files/w3.css -->
+
+<!-- INCLUDEJS @MT_s3files/handleImgS3BBCode.js -->
+
+<!-- INCLUDEJS @MT_s3files/image-compressor.js -->
+
+
+
+<div class="panel bg3 panel-container" id="imgs3-panel">
+	
+	In questa finestra è possibile gestire gli allegati relativi a questo post.
+	
+	<br/>
+	
+	<br/>
+	
+
+	<div id="container" style="width:100%">
+		<input type="button" class="button2" value="Aggiungi file" id="s3addfiles" onclick="upLoadNewFile()" style="float:left"/>
+		<div id="loader" style="margin:0 auto;display:none"></div>
+	</div>
+	<input type="file" id="imgupload" style="display:none" onChange="onFileChoosen()" multiple="multiple"/> 
+	
+	<input type="text" id="s3filelist" name="s3filelist" style="display:none" onChange="onFileChoosen()"/> 
+	<br/>
+	<br/>
+	
+	<input type="text" id="oldrows" value="{S_SOME_VARIABLE}" style="display:none" name="oldrows"/> 
+	
+	<input type="text" id="quoted" value="{S_QUOTED_FILES}" style="display:none" name="quoted"/> 
+	
+	<div class="panel file-list-container " style="display:none;"  id="s3-file-list-container">
+			<table id="s3table" class=" zebra-list w3-table css-serial" name="s3table" >
+  
+			<col width="5%">
+			<col width="15%">
+			<col width="20%">
+			<col width="25%">
+			<col width="10%">
+			<col width="15%">
+			<col width="10%">
+			<thead>
+				<tr>
+					<th>N°</th>
+					<th class="attach-name">NOME</th>
+					<th class="attach-name">ANTEPRIMA</th>
+					<th class="attach-name">DIDASCALIA</th>
+					<th class="attach-filesize">DIMENSIONE</th>
+				</tr>
+			</thead>
+			
+			</table>
+
+	</div>
+	
+	
+</div>
+
+<script>
+	
+	//build names of quoted files
+	var quotedNames=[];
+	if (document.getElementById("quoted").value.length>1) {
+		var stringRows = document.getElementById("quoted").value.substring(1).split("*");
+		for (var j=0;j<stringRows.length;j++) {
+		    var rowString = stringRows[j].split("#");
+			var name = rowString[0];
+			quotedNames.push(name);
+		}
+	}
+	
+	//build rows of added files
+	var names=[];
+	
+	if (document.getElementById("oldrows").value.length>1) {
+		
+		var table = document.getElementById("s3table");
+		
+	
+		var stringRows = document.getElementById("oldrows").value.substring(1).split("*");
+		
+		for (var j=0;j<stringRows.length;j++) {
+			 (function () {
+				var rowString = stringRows[j].split("#");
+				var name = rowString[0];
+				var size = rowString[2];
+				var id = rowString[1];
+				var tag = rowString[3];
+				var didascalia = rowString[4];
+				
+				var row = table.insertRow();
+				
+				row.heigth="100";
+		
+				var cell0 = row.insertCell(0);
+				cell0.width='5%';
+				
+				var cell1 = row.insertCell(1);
+				cell1.width='15%';
+				
+				var cell5 =row.insertCell(2);
+				cell5.width='20%';
+				
+				var cell6 = row.insertCell(3);
+				cell6.width='25%';
+				
+				
+				if (tag == 'image') {
+					var img = document.createElement('img');
+					img.src = "./ext/MT/s3files/download/linkAllegato.php?id="+id+"&tag=image";
+					img.style.maxHeight="80px";
+					img.style.maxWidth="100px";
+					cell5.appendChild(img);
+					
+					var didascaliaInput=document.createElement("input");
+					didascaliaInput.disabled=true;
+					didascaliaInput.value=didascalia;
+					didascaliaInput.type = "text";
+					didascaliaInput.size=65;
+					didascaliaInput.maxLength=75;
+					
+					var editSaveDidascaliaButton=document.createElement('button');
+					editSaveDidascaliaButton.innerHTML='<img src="./ext/MT/s3files/images/edit.png" width="30px" />';
+					editSaveDidascaliaButton.addEventListener("click",function _edit() {
+						editDidascalia(didascaliaInput,editSaveDidascaliaButton,name,row,tag,id,size,tag);
+					});
+					editSaveDidascaliaButton.type="button";
+					cell6.appendChild(didascaliaInput);
+					cell6.appendChild(editSaveDidascaliaButton);
+				}
+				
+				
+				
+				var cell2 = row.insertCell(4);
+				cell2.width='10%';
+				
+				var cell3 = row.insertCell(5);
+				cell3.width='10%';
+		
+				var cell4 = row.insertCell(6);
+				cell4.width='15%';
+				
+				
+				cell1.innerHTML = name;
+				
+				cell2.innerHTML = size+" KB" ; 
+				
+				var btn1 = document.createElement('input');
+				btn1.style.width = "100px";
+				btn1.style.height = "60px";
+				btn1.type = "button";
+				btn1.style.display = "block";
+				btn1.className = "btn";
+				btn1.value = "Aggiungi in linea";
+				btn1.addEventListener("click", function() {
+					aggiungiInLinea(name,tag,id);
+				});
+				cell3.appendChild(btn1);
+				
+				
+				var btn2 = document.createElement('input');
+				btn2.style.width = "100px";
+				btn2.style.height = "60px";
+				btn2.type = "button";
+				btn2.className = "btn";
+				btn2.value = "Cancella";
+				btn2.addEventListener("click",function() {
+					cancella(name,row,tag,id,size,didascaliaInput);
+				});
+				cell4.appendChild(btn2);
+				
+				
+				
+				
+				names.push(name);
+				document.getElementById("s3filelist").value=document.getElementById("s3filelist").value+"*"+name+"#"+id+"#"+size+"#"+tag+"#"+didascalia;
+				document.getElementById("s3-file-list-container").style.display = "block";
+			 }()); 
+		}
+	}
+	
+	
+
+</script>
