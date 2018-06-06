@@ -444,17 +444,25 @@ function addWatermark(file) {
 						var i = new Image();
 						i.src = reader.result;
 						i.onload = function() {
-						widthWatermark=i.width/2;	
+						var logoWidthVar= logoWidth(i.width);
+						var textWidthVar=textSize(i.width);
+						if ((!logoWidthVar) || (!textWidthVar)) {
+							alert("Errore, dimensioni foto non supportate");
+							stopLoader();
+							return;
+						}
+						widthWatermark=logoWidthVar;	
 							//faccio il resize del watermark e lo mando a stampare
 							new ImageCompressor(blob, {
 								quality: .9,
-								maxWidth: widthWatermark,
+								width: widthWatermark,
 								maxHeight: i.height/4,
 								success(resizedImage) {
-									addWatermark2(file, resizedImage,widthWatermark);
+									addWatermark2(file, resizedImage,widthWatermark,textWidthVar);
 								}, 
 								error(e) {
 									alert("errore durante la conversione");
+									stopLoader();
 								},
 							});
 							
@@ -464,11 +472,13 @@ function addWatermark(file) {
 					reader.readAsDataURL(file);
 				} else {
 					alert("Ridimensionamento non supportato per questo browser");
+					stopLoader();
 				}	
 			});
 			
 	} catch (e) {
 		alert("errore");
+		stopLoader();
 	}
 
 }	
@@ -480,10 +490,11 @@ const watermark_options = {
 };
 
 //aggiungo la scritta
-function addWatermark2(file,watermarkImg,widthWatermark) {
+function addWatermark2(file,watermarkImg,widthWatermark,textWidthVar) {
 	try {
+		
 		watermark([file,watermarkImg ], watermark_options)
-			.image(watermark.text.lowerRight(document.getElementById("s3username").value, '48px Josefin Slab', '#fff'))
+			.image(watermark.text.lowerRight(document.getElementById("s3username").value, textWidthVar+'px Josefin Slab', '#fff'))
 			.then(img => {
 				fetch(img.src)
 					.then(res => res.blob()) // Gets the response and returns it as a blob
@@ -539,3 +550,18 @@ function restrictDidascaliaInput(input) {
 	
 }
 
+function logoWidth(imgWidth) {
+	var width=5422+(-38737-5422)/(1+Math.pow(imgWidth/1.179*Math.pow(10,11),0.0638));
+	if (width<0) {
+		return false;
+	}
+	return width;
+}
+
+function textSize(imgWidth) {
+	var width=40.91+(17-41)/(1+Math.pow(imgWidth/904,5.6));
+	if (width<0) {
+		return false;
+	}
+	return width.toFixed(0);
+}
