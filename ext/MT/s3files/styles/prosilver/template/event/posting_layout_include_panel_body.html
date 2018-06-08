@@ -8,21 +8,39 @@
 
 <!-- INCLUDEJS @MT_s3files/watermark.js -->
 
+<link href='https://fonts.googleapis.com/css?family=Alegreya Sans SC' rel='stylesheet'>
+
 <div class="panel bg3 panel-container" id="imgs3-panel">
 	
 	In questa finestra è possibile gestire gli allegati relativi a questo post.
 	
 	<br/>
-	
 	<br/>
 	
-	
-	<div id="container" >
-		<input type="button" class="button2" value="Aggiungi file" id="s3addfiles" onclick="upLoadNewFile(0)" style="float:left"/>
-		<input type="button" style=" margin-left: 20px;" class="button2" value="Aggiungi file con watermark" id="s3addfiles_watermark" onclick="upLoadNewFile(1)" style="float:left"/>
-		<div id="loader" style="margin:0 auto;display:none"></div>
+	<div id="container" style="float:left">
+		<div style="float:left">
+			<input type="button" class="button2" value="Aggiungi file" id="s3addfiles" onclick="upLoadNewFile(0)" />
+		</div>
+		<div style="float: right; margin-left: 100px;">
+			
+				<input type="button"   class="button2" value="Aggiungi file con watermark" id="s3addfiles_watermark" onclick="upLoadNewFile(1)" />
+			
+			
+				<label for="signature_watermark">Firma</label>
+				<input type="text" id="signature_watermark" name="s3filelist" maxlength="20" value="{s3_username}" />
+			
+					<input type="radio" name="gender" value="female"> Sinistra	
+  					<input id="radio_watermark_rigth" type="radio" name="gender" value="male" checked="checked"> Destra
+  					
+			
+		</div>
+		<br/>
+		
 	</div>
-	
+	<br/>
+	<br/>
+	<br/>
+	<div id="loader" style="display:none;margin: 0 auto;"></div>
 	<input type="file" id="imgupload" style="display:none" onChange="onFileChoosen()" multiple="multiple"/> 
 	
 	<input type="text" id="s3filelist" name="s3filelist" style="display:none" />

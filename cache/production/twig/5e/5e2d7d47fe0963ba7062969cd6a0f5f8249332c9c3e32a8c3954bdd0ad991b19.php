@@ -84,21 +84,42 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
         }
         $this->getEnvironment()->get_assets_bag()->add_script($asset);        // line 10
         echo "
+<link href='https://fonts.googleapis.com/css?family=Alegreya Sans SC' rel='stylesheet'>
+
 <div class=\"panel bg3 panel-container\" id=\"imgs3-panel\">
 \t
 \tIn questa finestra è possibile gestire gli allegati relativi a questo post.
 \t
 \t<br/>
-\t
 \t<br/>
 \t
-\t
-\t<div id=\"container\" >
-\t\t<input type=\"button\" class=\"button2\" value=\"Aggiungi file\" id=\"s3addfiles\" onclick=\"upLoadNewFile(0)\" style=\"float:left\"/>
-\t\t<input type=\"button\" style=\" margin-left: 20px;\" class=\"button2\" value=\"Aggiungi file con watermark\" id=\"s3addfiles_watermark\" onclick=\"upLoadNewFile(1)\" style=\"float:left\"/>
-\t\t<div id=\"loader\" style=\"margin:0 auto;display:none\"></div>
+\t<div id=\"container\" style=\"float:left\">
+\t\t<div style=\"float:left\">
+\t\t\t<input type=\"button\" class=\"button2\" value=\"Aggiungi file\" id=\"s3addfiles\" onclick=\"upLoadNewFile(0)\" />
+\t\t</div>
+\t\t<div style=\"float: right; margin-left: 100px;\">
+\t\t\t
+\t\t\t\t<input type=\"button\"   class=\"button2\" value=\"Aggiungi file con watermark\" id=\"s3addfiles_watermark\" onclick=\"upLoadNewFile(1)\" />
+\t\t\t
+\t\t\t
+\t\t\t\t<label for=\"signature_watermark\">Firma</label>
+\t\t\t\t<input type=\"text\" id=\"signature_watermark\" name=\"s3filelist\" maxlength=\"20\" value=\"";
+        // line 30
+        echo ($context["s3_username"] ?? null);
+        echo "\" />
+\t\t\t
+\t\t\t\t\t<input type=\"radio\" name=\"gender\" value=\"female\"> Sinistra\t
+  \t\t\t\t\t<input id=\"radio_watermark_rigth\" type=\"radio\" name=\"gender\" value=\"male\" checked=\"checked\"> Destra
+  \t\t\t\t\t
+\t\t\t
+\t\t</div>
+\t\t<br/>
+\t\t
 \t</div>
-\t
+\t<br/>
+\t<br/>
+\t<br/>
+\t<div id=\"loader\" style=\"display:none;margin: 0 auto;\"></div>
 \t<input type=\"file\" id=\"imgupload\" style=\"display:none\" onChange=\"onFileChoosen()\" multiple=\"multiple\"/> 
 \t
 \t<input type=\"text\" id=\"s3filelist\" name=\"s3filelist\" style=\"display:none\" />
@@ -108,17 +129,17 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 \t<br/>
 \t
 \t<input type=\"text\" id=\"s3username\" name=\"s3username\" style=\"display:none\" value=\"";
-        // line 34
+        // line 52
         echo ($context["s3_username"] ?? null);
         echo "\" />
 \t
 \t<input type=\"text\" id=\"oldrows\" value=\"";
-        // line 36
+        // line 54
         echo ($context["S_SOME_VARIABLE"] ?? null);
         echo "\" style=\"display:none\" name=\"oldrows\"/> 
 \t
 \t<input type=\"text\" id=\"quoted\" value=\"";
-        // line 38
+        // line 56
         echo ($context["S_QUOTED_FILES"] ?? null);
         echo "\" style=\"display:none\" name=\"quoted\"/> 
 \t
@@ -293,7 +314,7 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 
     public function getDebugInfo()
     {
-        return array (  122 => 38,  117 => 36,  112 => 34,  86 => 10,  75 => 9,  72 => 8,  61 => 7,  58 => 6,  47 => 5,  44 => 4,  33 => 3,  30 => 2,  19 => 1,);
+        return array (  143 => 56,  138 => 54,  133 => 52,  108 => 30,  86 => 10,  75 => 9,  72 => 8,  61 => 7,  58 => 6,  47 => 5,  44 => 4,  33 => 3,  30 => 2,  19 => 1,);
     }
 
     /** @deprecated since 1.27 (to be removed in 2.0). Use getSourceContext() instead */

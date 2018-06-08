@@ -1,3 +1,4 @@
+
 var fileDaCaricare;
 
 var buttonsDisabled=[];
@@ -430,54 +431,63 @@ function getFileRidimensionato2(file, width) {
 
 function addWatermark(file) {
 	var widthWatermark;
+	var logoWidthVar;
+	var textWidthVar;
+	var imageWidth;
 	try {
-	//mi vado a prendere il watermark dell'utente
-	fetch('./ext/MT/s3files/images/logo.png')
-		.then(res => res.blob()) 
-			.then(blob => {
-				blob.name="watermark";
-				blob.lastModifiedDate = new Date();
-				//mi prendo la dimensione del file su cui applicare il watermark
-				if (FileReader) {
-					var reader  = new FileReader();
-					reader.onload= function () {
-						var i = new Image();
-						i.src = reader.result;
-						i.onload = function() {
-						var logoWidthVar= logoWidth(i.width);
-						var textWidthVar=textSize(i.width);
-						if ((!logoWidthVar) || (!textWidthVar)) {
-							alert("Errore, dimensioni foto non supportate");
-							stopLoader();
-							return;
-						}
-						widthWatermark=logoWidthVar;	
-							//faccio il resize del watermark e lo mando a stampare
-							new ImageCompressor(blob, {
-								quality: .9,
-								width: widthWatermark,
-								maxHeight: i.height/4,
-								success(resizedImage) {
-									addWatermark2(file, resizedImage,widthWatermark,textWidthVar);
-								}, 
-								error(e) {
-									alert("errore durante la conversione");
-									stopLoader();
-								},
+		//mi prendo la dimensione del file su cui applicare il watermark
+		if (FileReader) {
+			var reader  = new FileReader();
+			reader.onload= function () {
+				var i = new Image();
+				i.src = reader.result;
+				i.onload = function() {
+					logoWidthVar= logoWidth(i.width);
+					textWidthVar=textSize(i.width);
+					imageWidth=i.width;
+					if ((!logoWidthVar) || (!textWidthVar)) {
+						alert("Errore, dimensioni foto non supportate");
+						stopLoader();
+						return;
+					}
+					widthWatermark=logoWidthVar;
+					//mi vado a prendere il watermark dell'utente
+					fetch('./ext/MT/s3files/images/'+getLogoNameByDim(imageWidth))
+						.then(res => res.blob()) 
+							.then(blob => {
+								blob.name="watermark";
+								blob.lastModifiedDate = new Date();
+								
+								
+								//faccio il resize del watermark e lo mando a stampare
+								new ImageCompressor(blob, {
+												quality: .9,
+												width: widthWatermark,
+												maxWidth : i.width/3,
+												maxHeight: i.height/4,
+												success(resizedImage) {
+													addWatermark2(file, resizedImage,widthWatermark,textWidthVar);
+												}, 
+												error(e) {
+													alert("errore durante la conversione");
+													stopLoader();
+												},
+								});
+											
+											
+								
 							});
-							
-							
-						}
-					};
-					reader.readAsDataURL(file);
-				} else {
-					alert("Ridimensionamento non supportato per questo browser");
-					stopLoader();
-				}	
-			});
+				}
+			};
+			reader.readAsDataURL(file);
+		}  else {
+			alert("Ridimensionamento non supportato per questo browser");
+			stopLoader();
+		}
+
 			
 	} catch (e) {
-		alert("errore");
+		alert(e);
 		stopLoader();
 	}
 
@@ -493,17 +503,18 @@ const watermark_options = {
 function addWatermark2(file,watermarkImg,widthWatermark,textWidthVar) {
 	try {
 		
-		watermark([file,watermarkImg ], watermark_options)
-			.image(watermark.text.lowerRight(document.getElementById("s3username").value, textWidthVar+'px Josefin Slab', '#fff'))
+		watermark([watermarkImg], watermark_options)
+			.image(watermark.text.lowerRight("     "+document.getElementById("signature_watermark").value, textWidthVar+'px Alegreya Sans SC', '#fff'))
 			.then(img => {
 				fetch(img.src)
 					.then(res => res.blob()) // Gets the response and returns it as a blob
 						.then(blob => {
 							blob.name=file.name;
 							blob.lastModifiedDate = new Date();
-							addWatermark3(blob,watermarkImg);
+							addWatermark3(file,blob);
 						});
 			});
+		
 	} catch (e) {
 		alert(e);
 		stopLoader();
@@ -515,6 +526,7 @@ function addWatermark2(file,watermarkImg,widthWatermark,textWidthVar) {
 function addWatermark3(file,watermarkImg) {
 	
 	try {
+		if (document.getElementById("radio_watermark_rigth").checked) {
 		watermark([file,watermarkImg ], watermark_options)
 			.image(watermark.image.lowerRight())
 			.then(img => {
@@ -536,6 +548,29 @@ function addWatermark3(file,watermarkImg) {
 		
 						});
 			});
+		} else {
+			watermark([file,watermarkImg ], watermark_options)
+			.image(watermark.image.lowerLeft())
+			.then(img => {
+				fetch(img.src)
+					.then(res => res.blob()) // Gets the response and returns it as a blob
+						.then(blob => {
+							blob.name=file.name;
+							blob.lastModifiedDate = new Date();
+								if (blob.size > 600000 && blob.type.match('image.*')) {
+									var r = confirm("Attenzione! L'immagine "+blob.name+" è troppo grande. Vuoi ridimensionarla? Il ridimensionamento causerà una perdita di qualità e il rallentamento dell'upload.");
+									if (r == true) {
+										getFileRidimensionato1(blob);
+									} else {
+										stopLoader();
+									}
+									return;
+								}
+								cacheFile(blob);
+		
+						});
+			});
+		}
 	} catch (e) {
 		alert(e);
 		stopLoader();
@@ -551,7 +586,7 @@ function restrictDidascaliaInput(input) {
 }
 
 function logoWidth(imgWidth) {
-	var width=5422+(-38737-5422)/(1+Math.pow(imgWidth/1.179*Math.pow(10,11),0.0638));
+	var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
 	if (width<0) {
 		return false;
 	}
@@ -559,9 +594,21 @@ function logoWidth(imgWidth) {
 }
 
 function textSize(imgWidth) {
-	var width=40.91+(17-41)/(1+Math.pow(imgWidth/904,5.6));
+	var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
 	if (width<0) {
 		return false;
 	}
-	return width.toFixed(0);
+	return (width/(13+3000/width)).toFixed(0);
 }
+
+function getLogoNameByDim(imageWidth) {
+	if (imageWidth>=2000) {
+		return "logoBig.png";
+	}
+	if (1000<imageWidth) {
+		return "logoMedio.png";
+	}
+	
+	return "logoPiccolo.png";
+}
+
