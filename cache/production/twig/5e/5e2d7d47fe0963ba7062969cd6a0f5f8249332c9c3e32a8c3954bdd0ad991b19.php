@@ -93,11 +93,11 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 \t<br/>
 \t<br/>
 \t
-\t<div id=\"container\" style=\"float:left\">
-\t\t<div style=\"float:left\">
+\t<div id=\"container\" style=\"float:left;overflow-x:auto;white-space:nowrap;width:100% \">
+\t\t<div style=\"display: inline-block;\">
 \t\t\t<input type=\"button\" class=\"button2\" value=\"Aggiungi file\" id=\"s3addfiles\" onclick=\"upLoadNewFile(0)\" />
 \t\t</div>
-\t\t<div style=\"float: right; margin-left: 100px;\">
+\t\t<div style=\" margin-left: 50px;display: inline-block;\">
 \t\t\t
 \t\t\t\t<input type=\"button\"   class=\"button2\" value=\"Aggiungi file con watermark\" id=\"s3addfiles_watermark\" onclick=\"upLoadNewFile(1)\" />
 \t\t\t
