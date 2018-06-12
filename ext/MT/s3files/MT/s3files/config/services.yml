@@ -1,0 +1,14 @@
+
+services:
+    MT.s3files.listener:
+        class: MT\s3files\event\main_listener
+        arguments:
+            - @config
+            - @template
+            - @user
+            - %core.root_path%
+            - '@request'
+            - '@dbal.conn'
+            - '@auth'
+        tags:
+            - { name: event.listener }
