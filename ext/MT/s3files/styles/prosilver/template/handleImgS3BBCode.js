@@ -84,12 +84,24 @@ function onFileChoosen(){
 			
 			if (file!=null && names.indexOf(file.name)==-1 && quotedNames.indexOf(file.name)==-1) {
 				
-				if ( file.type.match('image.*') && document.getElementById("flgwatermark").value==1) {
+				
+				
+				if ( document.getElementById("flgwatermark").value==1 ) {
+					if (!(file.type.match('image.jpeg') || file.type.match('image.png'))){
+						alert("Tipo di file non supportato");
+						stopLoader();
+						return;
+					}
 					addWatermark(file);
 					return;
-				}
+				} 
 				
 				if (file.size > 600000 && file.type.match('image.*')) {
+					if (!(file.type.match('image.jpeg') || file.type.match('image.png'))){
+						alert("Tipo di file non supportato");
+						stopLoader();
+						return;
+					}
 					var r = confirm("Attenzione! L'immagine "+file.name+" è troppo grande. Vuoi ridimensionarla? Il ridimensionamento causerà una perdita di qualità e il rallentamento dell'upload.");
 					if (r == true) {
 						getFileRidimensionato1(file);
@@ -445,11 +457,11 @@ function addWatermark(file) {
 					logoWidthVar= logoWidth(i.width);
 					textWidthVar=textSize(i.width);
 					imageWidth=i.width;
-					if ((!logoWidthVar) || (!textWidthVar)) {
+					/*if ((!logoWidthVar) || (!textWidthVar)) {
 						alert("Errore, dimensioni foto non supportate");
 						stopLoader();
 						return;
-					}
+					}*/
 					widthWatermark=logoWidthVar;
 					//mi vado a prendere il watermark dell'utente
 					fetch('./ext/MT/s3files/images/'+getLogoNameByDim(imageWidth))
@@ -457,9 +469,9 @@ function addWatermark(file) {
 							.then(blob => {
 								blob.name="watermark";
 								blob.lastModifiedDate = new Date();
+								addWatermark2(file, blob,widthWatermark,textWidthVar);
 								
-								
-								//faccio il resize del watermark e lo mando a stampare
+								/*//faccio il resize del watermark e lo mando a stampare
 								new ImageCompressor(blob, {
 												quality: .9,
 												width: widthWatermark,
@@ -472,7 +484,7 @@ function addWatermark(file) {
 													alert("errore durante la conversione");
 													stopLoader();
 												},
-								});
+								});*/
 											
 											
 								
@@ -504,7 +516,7 @@ function addWatermark2(file,watermarkImg,widthWatermark,textWidthVar) {
 	try {
 		
 		watermark([watermarkImg], watermark_options)
-			.image(watermark.text.center("     "+document.getElementById("signature_watermark").value, textWidthVar+'px sans-serif', '#fff', 0.8))
+			.image(watermark.text.center("     "+document.getElementById("signature_watermark").value, textWidthVar+'px sans-serif', '#fff'))
 			.then(img => {
 				fetch(img.src)
 					.then(res => res.blob()) // Gets the response and returns it as a blob
@@ -587,52 +599,70 @@ function restrictDidascaliaInput(input) {
 
 function logoWidth(imgWidth) {
 	
+	/*if (0<=imgWidth<=500) {
+		return 200;
+	}
 	if (0<=imgWidth<=500) {
 		return 200;
 	}
-	if (640<=imgWidth<=980) {
-		return 370;
-	}
-	/*var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
+	var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
 	if (width<0) {
 		return false;
-	}
-	return width;*/
+	}*/
+	return 0;
 }
 
 function textSize(imgWidth) {
-	if (0<=imgWidth<=500) {
+	
+	if (0<=imgWidth && imgWidth<=640) {
 		return 12;
 	}
 	
-	if (640<=imgWidth<=980) {
+	if (640<=imgWidth && imgWidth<=980) {
 		return 20;
 	}
-	/*var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
-	if (width<0) {
-		return false;
+	
+	if (980<=imgWidth && imgWidth<=1400) {
+		return 23;
 	}
-	return (width/(13+3000/width)).toFixed(0);*/
+	
+	if (1400<=imgWidth && imgWidth<=1900) {
+		return 36;
+	}
+	
+	if (1900<=imgWidth && imgWidth<=3500) {
+		return 52;
+	}
+	
+	return 85;
+	
+	
+	
 }
 
 function getLogoNameByDim(imageWidth) {
 	
-	if (0<=imageWidth<=630) {
+	if (0<=imageWidth && imageWidth<=630) {
 		return "logo_500.png";
 	}
 	
 	
-	if (640<=imageWidth<=980) {
+	if (630<=imageWidth && imageWidth<=980) {
 		return "logo_800.png";
 	}
 	
-	if (imageWidth>=2000) {
-		return "logoBig.png";
-	}
-	if (1000<imageWidth) {
-		return "logoMedio.png";
+	if (980<=imageWidth && imageWidth<=1400) {
+		return "logo_1024.png";
 	}
 	
-	return "logoPiccolo.png";
+	if (1400<=imageWidth && imageWidth<=1900) {
+		return "logo_1600.png";
+	}
+	
+	if (1900<=imageWidth && imageWidth<=3500) {
+		return "logo_2000.png";
+	}
+	
+	return "logo_4000.png";
 }
 

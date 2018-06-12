@@ -1,0 +1,4 @@
+<?php exit; ?>
+1560378601
+660
+a:1:{s:32:"b7b45d91f765c4ea87b6e493557b8a39";a:3:{i:0;a:4:{s:10:"named_path";s:44:"ext/MT/s3files/language/en/info_acp_demo.php";s:8:"ext_name";s:10:"MT/s3files";s:4:"path";s:27:"ext/MT/s3files/language/en/";s:8:"filename";s:17:"info_acp_demo.php";}i:1;a:4:{s:10:"named_path";s:42:"ext/MT/s3files/language/en/info_acp_s3.php";s:8:"ext_name";s:10:"MT/s3files";s:4:"path";s:27:"ext/MT/s3files/language/en/";s:8:"filename";s:15:"info_acp_s3.php";}i:2;a:4:{s:10:"named_path";s:50:"ext/phpbb/viglink/language/en/info_acp_viglink.php";s:8:"ext_name";s:13:"phpbb/viglink";s:4:"path";s:30:"ext/phpbb/viglink/language/en/";s:8:"filename";s:20:"info_acp_viglink.php";}}}
