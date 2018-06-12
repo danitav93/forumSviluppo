@@ -84,7 +84,6 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
         }
         $this->getEnvironment()->get_assets_bag()->add_script($asset);        // line 10
         echo "
-<link href='https://fonts.googleapis.com/css?family=Alegreya Sans SC' rel='stylesheet'>
 
 <div class=\"panel bg3 panel-container\" id=\"imgs3-panel\">
 \t
@@ -104,12 +103,12 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 \t\t\t
 \t\t\t\t<label for=\"signature_watermark\">Firma</label>
 \t\t\t\t<input type=\"text\" id=\"signature_watermark\" name=\"s3filelist\" maxlength=\"20\" value=\"";
-        // line 30
+        // line 29
         echo ($context["s3_username"] ?? null);
         echo "\" />
 \t\t\t
-\t\t\t\t\t<input type=\"radio\" name=\"gender\" value=\"female\"> Sinistra\t
-  \t\t\t\t\t<input id=\"radio_watermark_rigth\" type=\"radio\" name=\"gender\" value=\"male\" checked=\"checked\"> Destra
+\t\t\t\t\t<input type=\"radio\" name=\"gender\" value=\"female\" checked=\"checked\"> Sinistra\t
+  \t\t\t\t\t<input id=\"radio_watermark_rigth\" type=\"radio\" name=\"gender\" value=\"male\" > Destra
   \t\t\t\t\t
 \t\t\t
 \t\t</div>
@@ -129,17 +128,17 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 \t<br/>
 \t
 \t<input type=\"text\" id=\"s3username\" name=\"s3username\" style=\"display:none\" value=\"";
-        // line 52
+        // line 51
         echo ($context["s3_username"] ?? null);
         echo "\" />
 \t
 \t<input type=\"text\" id=\"oldrows\" value=\"";
-        // line 54
+        // line 53
         echo ($context["S_SOME_VARIABLE"] ?? null);
         echo "\" style=\"display:none\" name=\"oldrows\"/> 
 \t
 \t<input type=\"text\" id=\"quoted\" value=\"";
-        // line 56
+        // line 55
         echo ($context["S_QUOTED_FILES"] ?? null);
         echo "\" style=\"display:none\" name=\"quoted\"/> 
 \t
@@ -314,7 +313,7 @@ class __TwigTemplate_75f1b1c907f2f3270484fd9f64bd6f1a861ec9092d4fcd5853215ba3030
 
     public function getDebugInfo()
     {
-        return array (  143 => 56,  138 => 54,  133 => 52,  108 => 30,  86 => 10,  75 => 9,  72 => 8,  61 => 7,  58 => 6,  47 => 5,  44 => 4,  33 => 3,  30 => 2,  19 => 1,);
+        return array (  142 => 55,  137 => 53,  132 => 51,  107 => 29,  86 => 10,  75 => 9,  72 => 8,  61 => 7,  58 => 6,  47 => 5,  44 => 4,  33 => 3,  30 => 2,  19 => 1,);
     }
 
     /** @deprecated since 1.27 (to be removed in 2.0). Use getSourceContext() instead */

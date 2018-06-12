@@ -463,8 +463,8 @@ function addWatermark(file) {
 								new ImageCompressor(blob, {
 												quality: .9,
 												width: widthWatermark,
-												maxWidth : i.width/3,
-												maxHeight: i.height/4,
+												maxWidth : i.width/2,
+												maxHeight: i.height/3,
 												success(resizedImage) {
 													addWatermark2(file, resizedImage,widthWatermark,textWidthVar);
 												}, 
@@ -504,7 +504,7 @@ function addWatermark2(file,watermarkImg,widthWatermark,textWidthVar) {
 	try {
 		
 		watermark([watermarkImg], watermark_options)
-			.image(watermark.text.lowerRight("     "+document.getElementById("signature_watermark").value, textWidthVar+'px Alegreya Sans SC', '#fff'))
+			.image(watermark.text.center("     "+document.getElementById("signature_watermark").value, textWidthVar+'px sans-serif', '#fff', 0.8))
 			.then(img => {
 				fetch(img.src)
 					.then(res => res.blob()) // Gets the response and returns it as a blob
@@ -586,22 +586,46 @@ function restrictDidascaliaInput(input) {
 }
 
 function logoWidth(imgWidth) {
-	var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
+	
+	if (0<=imgWidth<=500) {
+		return 200;
+	}
+	if (640<=imgWidth<=980) {
+		return 370;
+	}
+	/*var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
 	if (width<0) {
 		return false;
 	}
-	return width;
+	return width;*/
 }
 
 function textSize(imgWidth) {
-	var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
+	if (0<=imgWidth<=500) {
+		return 12;
+	}
+	
+	if (640<=imgWidth<=980) {
+		return 20;
+	}
+	/*var width=198657300+(318-198657300)/(1+Math.pow(imgWidth/11602780,1.54));
 	if (width<0) {
 		return false;
 	}
-	return (width/(13+3000/width)).toFixed(0);
+	return (width/(13+3000/width)).toFixed(0);*/
 }
 
 function getLogoNameByDim(imageWidth) {
+	
+	if (0<=imageWidth<=630) {
+		return "logo_500.png";
+	}
+	
+	
+	if (640<=imageWidth<=980) {
+		return "logo_800.png";
+	}
+	
 	if (imageWidth>=2000) {
 		return "logoBig.png";
 	}
